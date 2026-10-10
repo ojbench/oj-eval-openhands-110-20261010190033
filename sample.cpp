@@ -26,8 +26,10 @@ long long dateToDays(int y,int m,int d){
 }
 
 void daysToDate(long long days, int &y,int &m,int &d){
-    // Convert days offset from 1900-01-01 to a date; clamp negative to base date
+    // Clamp days to valid range [0, MAX_DAYS]
+    const long long MAX_DAYS = dateToDays(2030, 12, 31);
     if(days < 0) days = 0;
+    if(days > MAX_DAYS) days = MAX_DAYS;
     y = 1900;
     // Adjust years for positive days
     while(true){
