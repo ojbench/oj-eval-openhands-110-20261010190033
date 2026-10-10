@@ -26,23 +26,32 @@ long long dateToDays(int y,int m,int d){
 }
 
 void daysToDate(long long days, int &y,int &m,int &d){
-    y=1900;
+    // Convert days offset (can be negative) from 1900-01-01 to a date
+    y = 1900;
+    // Adjust years for negative days
+    while(days < 0){
+        // Move to previous year
+        --y;
+        days += isLeap(y) ? 366 : 365;
+    }
+    // Adjust years for positive days
     while(true){
-        int yearDays = isLeap(y)?366:365;
-        if(days>=yearDays){
-            days-=yearDays;
+        int yearDays = isLeap(y) ? 366 : 365;
+        if(days >= yearDays){
+            days -= yearDays;
             ++y;
-        }else break;
+        } else break;
     }
-    m=1;
+    // Determine month
+    m = 1;
     while(true){
-        int md = daysInMonth(y,m);
-        if(days>=md){
-            days-=md;
+        int md = daysInMonth(y, m);
+        if(days >= md){
+            days -= md;
             ++m;
-        }else break;
+        } else break;
     }
-    d = (int)days + 1;
+    d = static_cast<int>(days) + 1;
 }
 
 class Date{
@@ -97,10 +106,11 @@ public:
         int y,m,d; daysToDate(days,y,m,d);
         return Date(y,m,d);
     }
-    // - days
+    // - days (clamp to earliest date if result before 1900-01-01)
     Date operator-(int sub) const{
         long long days = dateToDays(_year,_month,_day);
         days -= sub;
+        if(days < 0) days = 0; // clamp
         int y,m,d; daysToDate(days,y,m,d);
         return Date(y,m,d);
     }
