@@ -26,14 +26,9 @@ long long dateToDays(int y,int m,int d){
 }
 
 void daysToDate(long long days, int &y,int &m,int &d){
-    // Convert days offset (can be negative) from 1900-01-01 to a date
+    // Convert days offset from 1900-01-01 to a date; clamp negative to base date
+    if(days < 0) days = 0;
     y = 1900;
-    // Adjust years for negative days
-    while(days < 0){
-        // Move to previous year
-        --y;
-        days += isLeap(y) ? 366 : 365;
-    }
     // Adjust years for positive days
     while(true){
         int yearDays = isLeap(y) ? 366 : 365;
@@ -106,11 +101,10 @@ public:
         int y,m,d; daysToDate(days,y,m,d);
         return Date(y,m,d);
     }
-    // - days (clamp to earliest date if result before 1900-01-01)
+    // - days
     Date operator-(int sub) const{
         long long days = dateToDays(_year,_month,_day);
         days -= sub;
-        if(days < 0) days = 0; // clamp
         int y,m,d; daysToDate(days,y,m,d);
         return Date(y,m,d);
     }
